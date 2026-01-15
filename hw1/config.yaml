@@ -1,0 +1,8 @@
+top_n: 10
+punctuation : .,!?;:"()[]
+stopwords: stopwords.txt
+sort_key: count
+sort_reverse: True
+i_pad: 2
+word_pad: 15
+count_pad: 3

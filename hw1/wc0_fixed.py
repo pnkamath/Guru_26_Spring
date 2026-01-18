@@ -6,13 +6,33 @@ from types import SimpleNamespace as obj
 
 # Q3: Policy data
 CONFIG = {
-  "input_file": "essay.txt","top_n": 10,"punctuation": '.,!?;:"()[]',"sort_key": "count","sort_reverse": True,"output_format": "text","stopwords_file": "stopwords.txt","output_dir": r"D:\Future_Docs\NCSU\How_to_be_SW_guru\Guru_26_Spring\hw1","output_json": "results.json","output_csv": "results.csv"}
+  "input_file": "essay.txt",
+  "top_n": 10,
+  "punctuation": '.,!?;:"()[]',
+  "sort_key": "count",
+  "sort_reverse": True,
+  "output_format": "text",
+  "language": "english",           # "english" or "spanish"
+  "stopwords_file": "stopwords_english.txt",  # default
+  "output_dir": r"D:\Future_Docs\NCSU\How_to_be_SW_guru\Guru_26_Spring\hw1",
+  "output_json": "results.json",
+  "output_csv": "results.csv"
+}
 
 def load_stopwords(path):
   with open(path) as f:
     return set(line.strip() for line in f if line.strip())
 
-STOPWORDS = load_stopwords(CONFIG["stopwords_file"])
+def get_stopwords(config):
+  lang = config.get("language", "english").lower()
+  if lang == "spanish":
+    config["stopwords_file"] = "stopwords_spanish.txt"
+  else:
+    config["stopwords_file"] = "stopwords_english.txt"
+
+  return load_stopwords(config["stopwords_file"])
+
+STOPWORDS = get_stopwords(CONFIG)
 
 # Q1: Model (no I/O)
 def count_words(filename, config, stopwords):

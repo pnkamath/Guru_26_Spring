@@ -1,6 +1,6 @@
 top_n: 10
 punctuation : .,!?;:"()[]
-stopwords: stopwords.txt
+stopwords: D:\Future_Docs\NCSU\How_to_be_SW_guru\Guru_26_Spring\hw1\stopwords.txt
 sort_key: count
 sort_reverse: True
 i_pad: 2

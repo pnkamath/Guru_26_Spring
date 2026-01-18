@@ -1,0 +1,45 @@
+{
+  "file": "essay.txt",
+  "top": [
+    [
+      "software",
+      5
+    ],
+    [
+      "concerns",
+      5
+    ],
+    [
+      "separation",
+      4
+    ],
+    [
+      "very",
+      3
+    ],
+    [
+      "principle",
+      3
+    ],
+    [
+      "logic",
+      3
+    ],
+    [
+      "quick",
+      2
+    ],
+    [
+      "fox",
+      2
+    ],
+    [
+      "lazy",
+      2
+    ],
+    [
+      "dog",
+      2
+    ]
+  ]
+}

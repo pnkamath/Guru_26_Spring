@@ -1,0 +1,21 @@
+
+==================================================
+WORD FREQUENCY ANALYSIS - essay.txt
+==================================================
+
+Total words (after removing stopwords): 99
+Unique words: 66
+
+Top 10 most frequent words:
+
+ 1. software          5 *****
+ 2. concerns          5 *****
+ 3. separation        4 ****
+ 4. very              3 ***
+ 5. principle         3 ***
+ 6. logic             3 ***
+ 7. quick             2 **
+ 8. fox               2 **
+ 9. lazy              2 **
+10. dog               2 **
+

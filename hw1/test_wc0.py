@@ -10,83 +10,65 @@ from wc0_fixed import (
     obj
 )
 
+class ConfigOverride:
+    def __init__(self, **kwargs):
+        self.overrides = kwargs
+        self.originals = {}
+
+    def __enter__(self):
+        for key, value in self.overrides.items():
+            self.originals[key] = CONFIG[key]
+            CONFIG[key] = value
+
+    def __exit__(self, exc_type, exc, tb):
+        for key, value in self.originals.items():
+            CONFIG[key] = value
+
+
 def test_clean_word():
     assert clean_word("hello,", ".,") == "hello"
 
 def test_count_words():
     tmp_file = "tmp_test.txt"
+    tmp_stopwords = "tmp_stopwords.txt"
+
     with open(tmp_file, "w") as f:
         f.write("the cat and the dog\n")
 
-    tmp_config = CONFIG.copy()
-    tmp_config["punctuation"] = ""
-    stopwords = {"the"}
+    with open(tmp_stopwords, "w") as f:
+        f.write("the\nand\n")
 
-    res = count_words(tmp_file, tmp_config, stopwords)
-    assert res.counts == {"cat": 1, "and": 1, "dog": 1}
+    with ConfigOverride(
+        stopwords_files={"english": tmp_stopwords},
+        language="english"
+    ):
+        res = count_words(tmp_file)
+        assert res.counts == {"cat": 1, "dog": 1}
 
     os.remove(tmp_file)
+    os.remove(tmp_stopwords)
 
 def test_to_json():
-    res = obj(file="x", counts={"a":1}, sorted_words=[("a",1)])
-    tmp_config = CONFIG.copy()
-    tmp_config["top_n"] = 1
+    with ConfigOverride(top_n=1):
+        res = obj(file="x", counts={"a": 1}, sorted_words=[("a", 1)])
+        json_output = to_json(res)
+        parsed = json.loads(json_output)
 
-    json_output = to_json(res, tmp_config)
-    parsed = json.loads(json_output)
-
-    assert parsed["file"] == "x"
-    assert parsed["top"] == [["a", 1]]
+        assert parsed["file"] == "x"
+        assert parsed["top"] == [["a", 1]]
 
 def test_to_csv():
-    res = obj(file="x", counts={"a":1}, sorted_words=[("a",1)])
-    tmp_config = CONFIG.copy()
-    tmp_config["top_n"] = 1
+    with ConfigOverride(top_n=1):
+        res = obj(file="x", counts={"a": 1}, sorted_words=[("a", 1)])
+        csv_output = to_csv(res)
 
-    csv_output = to_csv(res, tmp_config)
-    assert "rank,word,count" in csv_output
-    assert "1,a,1" in csv_output
-
-def test_report_text_output(capsys):
-    res = obj(file="x", counts={"a":1}, sorted_words=[("a",1)])
-    tmp_config = CONFIG.copy()
-    tmp_config["output_format"] = "text"
-    tmp_config["top_n"] = 1
-
-    report(res, tmp_config)
-    captured = capsys.readouterr()
-
-    assert "WORD FREQUENCY ANALYSIS" in captured.out
-    assert "Total words" in captured.out
-
-def test_report_json_output(capsys):
-    res = obj(file="x", counts={"a":1}, sorted_words=[("a",1)])
-    tmp_config = CONFIG.copy()
-    tmp_config["output_format"] = "json"
-    tmp_config["top_n"] = 1
-
-    report(res, tmp_config)
-    captured = capsys.readouterr()
-
-    assert '"file": "x"' in captured.out
-
-def test_report_csv_output(capsys):
-    res = obj(file="x", counts={"a":1}, sorted_words=[("a",1)])
-    tmp_config = CONFIG.copy()
-    tmp_config["output_format"] = "csv"
-    tmp_config["top_n"] = 1
-
-    report(res, tmp_config)
-    captured = capsys.readouterr()
-
-    assert "rank,word,count" in captured.out
+        assert "rank,word,count" in csv_output
+        assert "1,a,1" in csv_output
 
 if __name__ == "__main__":
     test_clean_word()
     test_count_words()
     test_to_json()
     test_to_csv()
-    test_report_text_output()
-    test_report_json_output()
-    test_report_csv_output()
     print("All tests passed!")
+

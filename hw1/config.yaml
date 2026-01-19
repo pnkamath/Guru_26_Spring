@@ -1,8 +1,24 @@
+input_file: essay.txt
 top_n: 10
-punctuation : .,!?;:"()[]
-stopwords: D:\Future_Docs\NCSU\How_to_be_SW_guru\Guru_26_Spring\hw1\stopwords.txt
-sort_key: count
-sort_reverse: True
-i_pad: 2
-word_pad: 15
-count_pad: 3
+punctuation: .,!?;:"()[]
+
+sorting:
+  key: count
+  reverse: True
+
+formatting:
+  i_pad: 2
+  word_pad: 15
+  count_pad: 4
+
+language: english
+
+stopwords_files:
+  english: stopwords_english.txt
+  spanish: stopwords_spanish.txt
+
+output:
+  format: text
+  output_dir: .
+  output_json: results.json
+  output_csv: results.csv

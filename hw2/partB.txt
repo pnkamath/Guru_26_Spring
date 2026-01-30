@@ -1,0 +1,15 @@
+B1)
+
+B2) In this function signature, i is an instance of Num and v is a numerical value. A Python equivalent of this signature is `def add(i: Num, v: float | None) -> None`.
+
+B3) 
+
+B4) This line is exporting the globals to any files that require this file. The Python equivalents of this are public classes as they are returned by default unless otherwise stated. 
+
+B5) 
+
+B6) In Lua, instead of using a list comprehension this task is performed using a Lambda function which returns the list of values which don't contain the searched text. This is the equivalent line in Lua: `x = sel(all, function(c) return not c.txt:find"[!X]$" end),`
+
+B7)
+
+B8) The deeper difference between these two `o()` functions is that in Python, the match statement makes the decision based off of the type of class being passed in. The Lua implementation on the other hand does not directly check the types of the value passed in beyond checking if it is a float or not a table. Instead, for non-floats or non-tables, it makes the decision on how to print based off of the behavior of the value.

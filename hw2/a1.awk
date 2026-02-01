@@ -1,5 +1,3 @@
-{
-  if($NF == "diaporthe-stem-canker"){
-    print $0
-  }
-}
+BEGIN { FS="," }
+NR==1 { next }
+$NF=="diaporthe-stem-canker"

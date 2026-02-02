@@ -1,4 +1,15 @@
 -- C1
+function collect(t, f)
+  local out = {}
+  for i, v in ipairs(t) do
+    out[i] = f(v)
+  end
+  return out
+end
+
+-- Test C1
+local c1 = collect({1,2,3}, function(x) return x*x end)
+print("C1:", table.concat(c1, ","))
 
 -- C2
 function select(t, f)
@@ -13,6 +24,19 @@ function select(t, f)
 end
 
 -- C3
+function reject(t, f)
+  local out = {}
+  for i, v in ipairs(t) do
+    if not f(v) then
+      table.insert(out, v)
+    end
+  end
+  return out
+end
+
+-- Test C3
+local c3 = reject({1,2,3,4,5}, function(x) return x%2==0 end)
+print("C3:", table.concat(c3, ","))
 
 -- C4
 function inject(t, acc, f)
@@ -24,6 +48,16 @@ function inject(t, acc, f)
 end
 
 -- C5
+function detect(t, f)
+  for i, v in ipairs(t) do
+    if f(v) then return v end
+  end
+  return nil
+end
+
+-- Test C5
+local c5 = detect({1,2,3,4}, function(x) return x>2 end)
+print("C5:", c5)
 
 -- C6
 function range(start, stop, step)

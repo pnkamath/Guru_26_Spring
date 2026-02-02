@@ -1,15 +1,45 @@
-B1)
+B1) In nb.lua, tables with metatables and the isa() function replicate Python’s class Obj(dict):
+
+Every object is a table, and isa() sets the metatable so that missing keys fall back to the class table.
+
+The metatable __index acts like Python’s __getattr__, allowing dot-notation access (obj.x) to return stored or inherited values.
+
+This gives the same feel as a Python object with dictionary storage: dynamic attributes, default values, and method lookups.
+
+Lua objects are therefore “table + metatable,” providing inheritance and dot-notation in a lightweight way.
 
 B2) In this function signature, i is an instance of Num and v is a numerical value. A Python equivalent of this signature is `def add(i: Num, v: float | None) -> None`.
 
-B3) 
+B3) Lua’s i.sd^2 stores the variance as a field of the object, so repeated access doesn’t require recomputation.
+
+Python computes standard deviation from m2 on the fly for memory efficiency, avoiding extra fields.
+
+Design preference: storing sd^2 is more convenient for repeated reads (faster), while computing from m2 is safer (avoids stale data).
+
+I would prefer storing sd^2 if variance is accessed frequently and data updates are controlled, otherwise compute on demand.
 
 B4) This line is exporting the globals to any files that require this file. The Python equivalents of this are public classes as they are returned by default unless otherwise stated. 
 
-B5) 
+B5) Python: for n, row in enumerate(rows) gives both index (n) and value (row).
+
+Lua uses the ipairs() function: for n, row in ipairs(rows) or for n,row in pairs(rows) depending on the table.
+
+Lua handles the “index + value” problem by returning two values from the iterator: the numeric key and the table element, unlike Python which wraps it in enumerate().
 
 B6) In Lua, instead of using a list comprehension this task is performed using a Lambda function which returns the list of values which don't contain the searched text. This is the equivalent line in Lua: `x = sel(all, function(c) return not c.txt:find"[!X]$" end),`
 
-B7)
+B7) Lua most() finds the key where a function f(k,v) is maximized. Python equivalent:
+
+def most(d, f):
+    best_key = None
+    best_val = float('-inf')
+    for k, v in d.items():
+        val = f(k, v)
+        if val > best_val:
+            best_val = val
+            best_key = k
+    return best_key
+
+Iterates over dictionary items, computes f(k,v), tracks the maximum, returns the key.
 
 B8) The deeper difference between these two `o()` functions is that in Python, the match statement makes the decision based off of the type of class being passed in. The Lua implementation on the other hand does not directly check the types of the value passed in beyond checking if it is a float or not a table. Instead, for non-floats or non-tables, it makes the decision on how to print based off of the behavior of the value.

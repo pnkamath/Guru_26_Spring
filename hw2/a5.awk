@@ -1,13 +1,13 @@
-BEGIN { FS="," }
-NR==1 { print; next }
+BEGIN { FS=", *" }
+NR==1 { next }
 
-NR<=10 {
-  print
+NR<=11 {
+  print $0
   next
 }
 
 $3=="?" { next }
 
 {
-  print
+  print $0
 }

@@ -1,7 +1,7 @@
+BEGIN { FS=", *" }
+NR==1 { next }
 {
-  if (NR > 1){
-    arr[$NF, $1]++
-  }
+  arr[$NF, $1]++
 }
 END {
   for (k in arr){

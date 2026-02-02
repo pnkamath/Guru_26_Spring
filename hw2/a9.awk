@@ -1,13 +1,13 @@
-BEGIN { 
-  FS=","; 
-  Total=0; 
-  classified=0; 
-  correct=0 
+BEGIN {
+  FS=", *";
+  Total=0;
+  classified=0;
+  correct=0
   if (wait=="") wait=10   # default training rows
 }
 NR==1 { next }
 NR <= wait+1 { train(); next }
-{ 
+{
   c=classify();
   print $NF","c;
   if (c == $NF){
@@ -24,7 +24,7 @@ function train(    i,c) {
   for(i=1; i<NF; i++) {
     if($i=="?") continue
     Freq[c,i,$i]++
-    if(++Seen[i,$i]==1) Attr[i]++ 
+    if(++Seen[i,$i]==1) Attr[i]++
   }
 }
 function classify(    i,c,t,best,bestc) {

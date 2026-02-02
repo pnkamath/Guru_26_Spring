@@ -1,7 +1,7 @@
-BEGIN { FS=","; Total=0; classified=0; correct=0 }
+BEGIN { FS=", *"; Total=0; classified=0; correct=0 }
 NR==1 { next }
 NR<=11 { train(); next }
-{ 
+{
   c=classify();
   print $NF","c;
   if (c == $NF){
@@ -11,7 +11,7 @@ NR<=11 { train(); next }
   train();
 }
 END {
-  print correct / classified
+  printf("Accuracy: %.2f%%\n", (correct/classified)*100)
 }
 function train(    i,c) {
   Total++; c=$NF; Classes[c]++

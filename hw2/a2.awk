@@ -1,10 +1,11 @@
+BEGIN { FS=", *" }
+
+NR==1 { next }
 {
-  if (NR > 1){
     arr[$NF]++
-  }
 }
 END {
   for (c in arr){
     print c, arr[c]
-    }  
+    }
 }

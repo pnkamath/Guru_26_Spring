@@ -7,10 +7,6 @@ function collect(t, f)
   return out
 end
 
--- Test C1
-local c1 = collect({1,2,3}, function(x) return x*x end)
-print("C1:", table.concat(c1, ","))
-
 -- C2
 function select(t, f)
   local result = {}
@@ -34,10 +30,6 @@ function reject(t, f)
   return out
 end
 
--- Test C3
-local c3 = reject({1,2,3,4,5}, function(x) return x%2==0 end)
-print("C3:", table.concat(c3, ","))
-
 -- C4
 function inject(t, acc, f)
   for _, v in ipairs(t) do
@@ -54,10 +46,6 @@ function detect(t, f)
   end
   return nil
 end
-
--- Test C5
-local c5 = detect({1,2,3,4}, function(x) return x>2 end)
-print("C5:", c5)
 
 -- C6
 function range(start, stop, step)
@@ -87,14 +75,23 @@ end
 
 -- Tests
 -- C1 Test
+print("C1 Test:")
+local c1 = collect({1,2,3}, function(x) return x*x end)
+-- print("C1:", table.concat(c1, ","))
+print_table(c1)
 
 -- C2 Test
+print("C2 Test:")
 local select_test = select({ 1, 2, 3, 4, 5 }, function(x) return x % 2 == 0 end)
 print_table(select_test)
 
 -- C3 Test
+print("C3 Test:")
+local c3 = reject({1,2,3,4,5}, function(x) return x%2==0 end)
+print_table(c3)
 
 -- C4 Tests
+print("C4 Tests:")
 local inject_test_1 = inject({ 1, 2, 3, 4 }, 0, function(a, x) return a + x end)
 print(inject_test_1)
 
@@ -102,6 +99,10 @@ local inject_test_2 = inject({ 1, 2, 3, 4 }, 1, function(a, x) return a * x end)
 print(inject_test_2)
 
 -- C5 Test
+print("C5 Test:")
+local c5 = detect({1,2,3,4}, function(x) return x>2 end)
+print(c5)
 
 -- C6 Test
+print("C6 Test:")
 for x in range(1, 10, 2) do print(x) end

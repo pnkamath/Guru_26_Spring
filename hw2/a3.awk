@@ -1,4 +1,4 @@
-BEGIN { FS="," }
+BEGIN { FS=", *" }
 NR==1 { next }
 {
   cnt[$2]++

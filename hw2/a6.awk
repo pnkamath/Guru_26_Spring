@@ -1,11 +1,11 @@
 BEGIN{
+  FS=", *"
   n = 0
 }
+NR==1 { next }
 {
-  if (NR > 1){
-    arr[$NF]++
-    n++
-  }
+  arr[$NF]++
+  n++
 }
 
 END{

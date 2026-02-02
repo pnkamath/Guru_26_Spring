@@ -1,7 +1,7 @@
-BEGIN { FS=","; Total=0; classified=0; correct=0; if (k=="") k=1; if (m=="") m = 1 }
+BEGIN { FS=", *"; Total=0; classified=0; correct=0; if (wait="") wait=10; if (k=="") k=1; if (m=="") m = 1 }
 NR==1 { next }
-NR<=11 { train(); next }
-{ 
+NR<=wait + 1 { train(); next }
+{
   c=classify();
   print $NF","c;
   if (c == $NF){
@@ -11,7 +11,7 @@ NR<=11 { train(); next }
   train();
 }
 END {
-  print correct / classified
+  printf("Accuracy: %.2f%%\n", (correct/classified)*100)
 }
 function train(    i,c) {
   Total++; c=$NF; Classes[c]++
@@ -32,4 +32,3 @@ function classify(    i,c,t,best,bestc) {
       t+=log((Freq[c,i,$i]+k)/(Classes[c]+k*Attr[i])) }
     if(t>best) { best=t; bestc=c }}
   return bestc }
-

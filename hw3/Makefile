@@ -41,6 +41,9 @@ date: ## show date
 files: ## show files
 	@ls
 
-all: out/S4
+all: out/S1 out/S2 out/S4
+
+out/S1: $(DATA); mkdir -p out; gawk -f S1.awk $< > $@
+out/S2: $(DATA); mkdir -p out; gawk -f S2.awk $< > $@
 
 out/S4: $(DATA); mkdir -p out; gawk -f S4.awk $< > $@

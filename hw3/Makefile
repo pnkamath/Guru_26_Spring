@@ -2,6 +2,7 @@ SHELL := /bin/bash
 GIT_ROOT := $(shell git rev-parse --show-toplevel 2>/dev/null)
 HERE := $(dir $(abspath $(lastword $(MAKEFILE_LIST))))
 
+DATA = page_blocks_dirty.csv
 
 help: ## show help.
 	@gawk 'BEGIN { FS=":.*##"; \
@@ -40,3 +41,6 @@ date: ## show date
 files: ## show files
 	@ls
 
+all: out/S4
+
+out/S4: $(DATA); mkdir -p out; gawk -f S4.awk $< > $@

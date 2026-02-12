@@ -2,6 +2,7 @@ SHELL := /bin/bash
 GIT_ROOT := $(shell git rev-parse --show-toplevel 2>/dev/null)
 HERE := $(dir $(abspath $(lastword $(MAKEFILE_LIST))))
 
+
 help: ## show help.
 	@gawk 'BEGIN { FS=":.*##"; \
 		printf "\nUsage:\n  make \033[36m<target>\033[0m\n\ntargets:\n" } \
@@ -12,14 +13,17 @@ help: ## show help.
 banner:
 	@printf '\033[36m'
 	@printf '%s\n' \
-' ______   ______   _____   ______' \
-'/\  ___\ /\  __ \ /\  __-. /\  ___\' \
-'\ \ \____\ \ \/\ \\ \ \/\ \\ \  __\' \
-' \ \_____\\ \_____\\ \____- \ \_____\' \
-'  \/_____/ \/_____/ \/____/  \/_____/'
+	'   ░██    ░██        ░██           ░██                            ░██' \
+	'   ░██    ░██                      ░██                            ░██' \
+	'░████████ ░████████  ░██░████████  ░██    ░██     ░██       ░████████  ░███████' \
+	'   ░██    ░██    ░██ ░██░██    ░██ ░██   ░██    ░██████    ░██    ░██ ░██    ░██' \
+	'   ░██    ░██    ░██ ░██░██    ░██ ░███████       ░██      ░██    ░██ ░██    ░██' \
+	'   ░██    ░██    ░██ ░██░██    ░██ ░██   ░██               ░██   ░███ ░██    ░██' \
+	'    ░████ ░██    ░██ ░██░██    ░██ ░██    ░██               ░█████░██  ░███████'
 	@printf '\033[0m\n'
 
 sh: ## run my shell
+	@$(MAKE) -s banner
 	@-HERE=$(HERE) bash --init-file $(HERE)/etc/ell -i
 
 push: ## save to cloud
@@ -28,3 +32,11 @@ push: ## save to cloud
 ~/tmp/%.html: %.py ~/tmp Makefile
 	mkdir -p ~/tmp
 	pycco -d ~/tmp $<
+	echo 'p {text-align: right}' >> ~/tmp/pycco.css
+
+date: ## show date
+	@echo $(shell date)
+
+files: ## show files
+	@ls
+

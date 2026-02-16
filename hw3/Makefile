@@ -50,11 +50,11 @@ all: out/S1 out/S2 out/S3 out/S4 out/S5 \
      out/G out/H out/I out/J out/K out/L out/M
 
 # ── Part 1: gawk ─────────────────────────────────
-out/S1: $(DATA); mkdir -p out; gawk -f S1.awk $< > $@
-out/S2: $(DATA); mkdir -p out; gawk -f S2.awk $< > $@
-out/S3: $(DATA); mkdir -p out; gawk -f S3.awk $< > $@
-out/S4: $(DATA); mkdir -p out; gawk -f S4.awk $< > $@
-out/S5: $(DATA); mkdir -p out; gawk -f S5.awk $< > $@
+out/S1: $(DATA); mkdir -p out; gawk -f S1.awk $< > $@ 2>&1
+out/S2: $(DATA); mkdir -p out; gawk -f S2.awk $< > $@ 2>&1
+out/S3: $(DATA); mkdir -p out; gawk -f S3.awk $< > $@ 2>&1
+out/S4: $(DATA); mkdir -p out; gawk -f S4.awk $< > $@ 2>&1
+out/S5: $(DATA); mkdir -p out; gawk -f S5.awk $< > $@ 2>&1
 
 # ── Part 2: python ────────────────────────────────
 out/A: $(DATA);         mkdir -p out; python3 checks.py A $< > $@

@@ -1,0 +1,3 @@
+# Awk Files
+
+Using the `S1.awk` script, we found that every row in `pages_block_dirty.csv` has every field listed in the header of the file. While Each column has a value, `S2.awk` shows that there are 2 columns, 7 and 8, which have a total of 23 rows that contain the value `?` in one of those columns. Through `S3.awk` we were able to easily see that the only column which has the same value in every row is the `DATASET_ID` column which contains the ID of the dataset being analyzed. `S4.awk` reports that there are 4 rows which contain class labels which are invalid. Using the `S5.awk` script we were also able to see that there were 124 duplicate rows in the dataset. 

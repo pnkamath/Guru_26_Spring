@@ -5,10 +5,6 @@ from math import sqrt
 
 MISSING = "?"
 
-# ----------------------------------------------------------------------
-# Basic statistics helpers (given in assignment)
-# ----------------------------------------------------------------------
-
 def mean(xs):
     return sum(xs) / len(xs) if xs else 0
 
@@ -29,16 +25,11 @@ def pearson(xs, ys):
         return 0
     return num / sqrt(dx * dy)
 
-# ----------------------------------------------------------------------
-# Utility
-# ----------------------------------------------------------------------
-
 def load_rows(path):
     with open(path) as f:
         return list(csv.DictReader(f))
 
 def numeric_columns(rows):
-    """Return list of columns that are numeric (ignore class!)."""
     cols = rows[0].keys()
     return [c for c in cols if c != "class!"]
 
@@ -73,7 +64,7 @@ def check_A(path):
     print_feature_results(identical)
 
 # ----------------------------------------------------------------------
-# B – Correlated features (|r| > 0.95)
+# B – Correlated features
 # ----------------------------------------------------------------------
 
 def check_B(path):
@@ -86,7 +77,7 @@ def check_B(path):
     print_feature_results(correlated)
 
 # ----------------------------------------------------------------------
-# C – Outlier features (contains ≥1 value outside μ ± 3σ)
+# C – Outlier features
 # ----------------------------------------------------------------------
 
 def check_C(path):
@@ -99,7 +90,7 @@ def check_C(path):
     print_feature_results(outlier_cols)
 
 # ----------------------------------------------------------------------
-# D – Features with conflicting values (referential integrity)
+# D – Features with conflicting values
 # ----------------------------------------------------------------------
 
 def check_D(path):
@@ -111,7 +102,7 @@ def check_D(path):
     print_feature_results(bad_features)
 
 # ----------------------------------------------------------------------
-# E – Features with implausible values (domain constraints)
+# E – Features with implausible values
 # ----------------------------------------------------------------------
 
 def check_E(path):
@@ -123,7 +114,7 @@ def check_E(path):
     print_feature_results(bad_features)
 
 # ----------------------------------------------------------------------
-# G – Outlier cases (row-level dual of C)
+# G – Outlier cases
 # ----------------------------------------------------------------------
 
 def check_G(path):
@@ -156,7 +147,7 @@ def check_G(path):
     print_case_results(bad_rows)
 
 # ----------------------------------------------------------------------
-# H – Inconsistent cases (identical features, different class!)
+# H – Inconsistent cases
 # ----------------------------------------------------------------------
 
 def check_H(path):
@@ -194,14 +185,54 @@ def check_H(path):
 
 def check_I(path):
     rows = load_rows(path)
+    
+    classes = set(row["class!"] for row in rows)
 
-    # TODO: compute μ and σ within each class
+    stds = {}
+    means = {}
+
+    for col in rows[0]:
+        if col == "class!":
+            continue
+    
+        means[col] = {}
+        stds[col] = {}
+
+        for cls in classes:
+            vals = []
+            for row in rows:
+                if row["class!"] == cls and row[col] != MISSING:
+                    vals.append(float(row[col]))
+
+            if len(vals) > 0:
+                means[col][cls] = mean(vals)
+                stds[col][cls] = sd(vals)
+            else:
+                means[col][cls] = 0
+                stds[col][cls] = 0
+
     bad_rows = set()
+
+    for i, row in enumerate(rows):
+        cls = row["class!"]
+
+        for col in means:
+            val = row[col]
+
+            if val == MISSING:
+                continue
+
+            if stds[col][cls] == 0:
+                continue
+
+            if abs(float(val) - means[col][cls]) > 3 * stds[col][cls]:
+                bad_rows.add(i + 2)  # +2 for header + 1-based indexing
+                break
 
     print_case_results(bad_rows)
 
 # ----------------------------------------------------------------------
-# J – Cases with conflicting feature values (given)
+# J – Cases with conflicting feature values
 # ----------------------------------------------------------------------
 
 def check_J(path):
@@ -236,14 +267,48 @@ def check_J(path):
 def check_K(path):
     rows = load_rows(path)
 
-    # TODO: detect rows violating plausibility constraints
     bad_rows = set()
 
-    print_case_results(bad_rows)
+    for i, row in enumerate(rows):
 
-# ----------------------------------------------------------------------
-# Main dispatch
-# ----------------------------------------------------------------------
+        if MISSING in row.values():
+            bad_rows.add(i + 2)
+            continue
+
+        height   = float(row["HEIGHT"])
+        length   = float(row["LENGHT"])
+        width    = float(row["WIDTH"])
+        area     = float(row["AREA"])
+        blackpix = float(row["BLACKPIX"])
+        blackand = float(row["BLACKAND"])
+        wb_trans = float(row["WB_TRANS"])
+        mean_tr  = float(row["MEAN_TR"])
+        eccen    = float(row["ECCEN"])
+        p_black  = float(row["P_BLACK"])
+        p_and    = float(row["P_AND"])
+        cls      = int(row["class!"])
+    
+        if any(v <= 0 for v in [
+            height, length, width, area,
+            blackpix, blackand, wb_trans,
+            mean_tr, eccen
+        ]):
+            bad_rows.add(i + 2)
+            continue
+
+        if not (1 <= cls <= 5):
+            bad_rows.add(i + 2)
+            continue
+
+        if blackpix > blackand:
+            bad_rows.add(i + 2)
+            continue
+
+        if not (0 <= p_black <= 1) or not (0 <= p_and <= 1):
+            bad_rows.add(i + 2)
+            continue
+    
+    print_case_results(bad_rows)
 
 if __name__ == "__main__":
     if len(sys.argv) != 3:

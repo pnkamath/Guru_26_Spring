@@ -56,10 +56,24 @@ def print_case_results(rows):
 
 def check_A(path):
     rows = load_rows(path)
-    cols = numeric_columns(rows)
+    header = list(rows[0].keys())
 
-    # TODO: group columns with identical values across all rows
+    # build column vectors (including missing)
+    cols = {h: [] for h in header}
+
+    for r in rows:
+        for h in header:
+            cols[h].append(r[h])
+
+    groups = {}
+    for h in header:
+        key = tuple(cols[h])
+        groups.setdefault(key, []).append(h)
+
     identical = set()
+    for g in groups.values():
+        if len(g) > 1:
+            identical.update(g)
 
     print_feature_results(identical)
 
@@ -71,8 +85,20 @@ def check_B(path):
     rows = load_rows(path)
     cols = numeric_columns(rows)
 
-    # TODO: compute Pearson correlations for all column pairs
     correlated = set()
+
+    for i in range(len(cols)):
+        for j in range(i+1, len(cols)):
+            xi = to_float_column(rows, cols[i])
+            xj = to_float_column(rows, cols[j])
+
+            if len(xi) != len(xj) or len(xi) == 0:
+                continue
+
+            r = pearson(xi, xj)
+            if abs(r) > 0.95:
+                correlated.add(cols[i])
+                correlated.add(cols[j])
 
     print_feature_results(correlated)
 
@@ -84,8 +110,23 @@ def check_C(path):
     rows = load_rows(path)
     cols = numeric_columns(rows)
 
-    # TODO: detect features with ≥1 extreme value
     outlier_cols = set()
+
+    for col in cols:
+        vals = to_float_column(rows, col)
+        if not vals:
+            continue
+
+        mu = mean(vals)
+        sigma = sd(vals)
+
+        if sigma == 0:
+            continue
+
+        for v in vals:
+            if abs(v - mu) > 3 * sigma:
+                outlier_cols.add(col)
+                break
 
     print_feature_results(outlier_cols)
 
@@ -95,9 +136,34 @@ def check_C(path):
 
 def check_D(path):
     rows = load_rows(path)
-
-    # TODO: detect columns involved in violated derived constraints
     bad_features = set()
+
+    for r in rows:
+        # Columns involved in constraints
+        needed = ['HEIGHT','LENGHT','AREA','ECCEN',
+                  'P_BLACK','P_AND','BLACKPIX','BLACKAND']
+        # Skip rows with missing values
+        if any(r[c] == MISSING for c in needed):
+            continue
+
+        h   = float(r['HEIGHT'])
+        l   = float(r['LENGHT'])
+        a   = float(r['AREA'])
+        e   = float(r['ECCEN'])
+        pb  = float(r['P_BLACK'])
+        pa  = float(r['P_AND'])
+        bpx = float(r['BLACKPIX'])
+        ba  = float(r['BLACKAND'])
+
+        # Check violations
+        if a != h * l:
+            bad_features.update(['HEIGHT','LENGHT','AREA'])
+        if h > 0 and abs(e - l/h) > 0.01:
+            bad_features.update(['ECCEN','HEIGHT','LENGHT'])
+        if a > 0 and abs(pb - bpx/a) > 0.001:
+            bad_features.update(['P_BLACK','BLACKPIX','AREA'])
+        if a > 0 and abs(pa - ba/a) > 0.001:
+            bad_features.update(['P_AND','BLACKAND','AREA'])
 
     print_feature_results(bad_features)
 
@@ -107,9 +173,45 @@ def check_D(path):
 
 def check_E(path):
     rows = load_rows(path)
-
-    # TODO: detect columns with ≥1 implausible value
     bad_features = set()
+
+    for r in rows:
+        # Skip rows with missing values
+        if any(v == MISSING for v in r.values()):
+            continue
+
+        # Extract numeric values
+        height   = float(r["HEIGHT"])
+        length   = float(r["LENGHT"])
+        width    = float(r["WIDTH"])
+        area     = float(r["AREA"])
+        blackpix = float(r["BLACKPIX"])
+        blackand = float(r["BLACKAND"])
+        wb_trans = float(r["WB_TRANS"])
+        mean_tr  = float(r["MEAN_TR"])
+        eccen    = float(r["ECCEN"])
+        p_black  = float(r["P_BLACK"])
+        p_and    = float(r["P_AND"])
+        cls      = int(r["class!"])
+
+        # Check numeric plausibility
+        for col, val in [('HEIGHT',height),('LENGHT',length),('WIDTH',width),
+                         ('AREA',area),('BLACKPIX',blackpix),('BLACKAND',blackand),
+                         ('WB_TRANS',wb_trans),('MEAN_TR',mean_tr),('ECCEN',eccen)]:
+            if val <= 0:
+                bad_features.add(col)
+
+        # Check class plausibility
+        if not (1 <= cls <= 5):
+            bad_features.add('class!')
+
+        # Check logical plausibility
+        if blackpix > blackand:
+            bad_features.update(['BLACKPIX','BLACKAND'])
+        if not (0 <= p_black <= 1):
+            bad_features.add('P_BLACK')
+        if not (0 <= p_and <= 1):
+            bad_features.add('P_AND')
 
     print_feature_results(bad_features)
 

@@ -64,16 +64,18 @@ def check_A(path):
     for r in rows:
         for h in header:
             cols[h].append(r[h])
-
-    groups = {}
-    for h in header:
-        key = tuple(cols[h])
-        groups.setdefault(key, []).append(h)
-
+    
     identical = set()
-    for g in groups.values():
-        if len(g) > 1:
-            identical.update(g)
+
+    for h in header:
+        first = cols[h][0]
+        SAME = True
+        for rowIndex in range(1, len(cols[h])):
+            if cols[h][rowIndex] != first:
+                SAME = False
+                break
+        if SAME:
+            identical.add(h)
 
     print_feature_results(identical)
 
@@ -139,11 +141,7 @@ def check_D(path):
     bad_features = set()
 
     for r in rows:
-        # Columns involved in constraints
-        needed = ['HEIGHT','LENGHT','AREA','ECCEN',
-                  'P_BLACK','P_AND','BLACKPIX','BLACKAND']
-        # Skip rows with missing values
-        if any(r[c] == MISSING for c in needed):
+        if MISSING in r.values():
             continue
 
         h   = float(r['HEIGHT'])
@@ -156,7 +154,7 @@ def check_D(path):
         ba  = float(r['BLACKAND'])
 
         # Check violations
-        if a != h * l:
+        if abs(a - h * l) > 0.001:
             bad_features.update(['HEIGHT','LENGHT','AREA'])
         if h > 0 and abs(e - l/h) > 0.01:
             bad_features.update(['ECCEN','HEIGHT','LENGHT'])

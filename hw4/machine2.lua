@@ -78,6 +78,11 @@ local my_payload = {
 	damage_queue = { 15, 90 },
 }
 
+if arg[1] == "--dot" then
+	print(machine.to_dot(rpg_rules))
+	os.exit()
+end
+
 print("=== STARTING TCO RPG BATTLE ===")
 
 -- Boot up the machine! (Passing the rules, initial state, and payload memory)

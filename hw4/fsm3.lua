@@ -21,8 +21,15 @@ local function run(rules, s, p)
 	if type(trans) == "function" then
 		trans = trans(p)
 	end
+	
+	local next = trans or s
 
-	return run(rules, trans or s, p)
+	-- Q1: record transition history
+	p.trace = p.trace or {}
+	table.insert(p.trace, string.format("[%s] %s -> %s", e, s, next))
+
+	return run(rules, next, p)
+	
 end
 
 function M.start(rules, s, p)

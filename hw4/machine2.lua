@@ -10,6 +10,42 @@ You just need this main.lua:
 ]]
 --
 local machine = require("fsm3")
+local function lint(rules, initial)
+
+	local referenced = {}
+
+	for state, rule in pairs(rules) do
+
+		-- Dead end: no transitions
+		if not rule.transitions or next(rule.transitions) == nil then
+			print("WARNING: dead end state -> " .. state)
+		end
+
+		if rule.transitions then
+			for event, target in pairs(rule.transitions) do
+
+				if type(target) == "string" then
+
+					-- Ghost state
+					if not rules[target] then
+						print("WARNING: ghost state -> " .. target .. " (from " .. state .. ")")
+					end
+
+					referenced[target] = true
+				end
+
+			end
+		end
+	end
+
+	-- Unreachable states
+	for state,_ in pairs(rules) do
+		if state ~= initial and not referenced[state] then
+			print("WARNING: unreachable state -> " .. state)
+		end
+	end
+
+end
 
 -- 1. Define the rules, actions, and transitions
 local rpg_rules = {
@@ -62,6 +98,7 @@ local rpg_rules = {
 local my_payload = {
 	name = "Hero",
 	hp = 100,
+	trace = {},
 	-- The sequence of events we want the FSM to process
 	queue = {
 		"walk",
@@ -86,7 +123,14 @@ end
 print("=== STARTING TCO RPG BATTLE ===")
 
 -- Boot up the machine! (Passing the rules, initial state, and payload memory)
+lint(rpg_rules, "idle")
+
 local final_memory = machine.start(rpg_rules, "idle", my_payload)
+-- After machine.start in machine2.lua
+print("\n--- FSM TRACE ---")
+for _, t in ipairs(final_memory.trace) do
+    print(t)
+end
 
 print("\n=== PROCESSING COMPLETE ===")
 print("Final Queue Size remaining: " .. #final_memory.queue)
